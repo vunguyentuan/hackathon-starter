@@ -1,0 +1,12 @@
+p= user.username
+p
+  b #{client.name} is requesting
+  b full access
+  | to your account
+p Do you approve?
+
+form(action="/api/oauth2/authorize", method="post")
+  input.form-control(type='hidden', name='transaction_id', value='#{transactionID}')
+  div
+    input.form-control(type='submit', id='allow', value='Allow')
+    input.form-control(type='submit', name='cancel', id='Deny', value='Deny')

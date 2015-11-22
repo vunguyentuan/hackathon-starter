@@ -1,0 +1,40 @@
+extends ../layout
+
+block content
+  .page-header
+    h3 Client List
+
+    table.table.table-striped
+      tr
+        th Name
+        th ID
+        th Secret
+
+        each client in clients
+          tr
+            td= client.name
+            td= client.id
+            td= client.secret
+
+  .page-header
+    h3 Create Client
+
+  form.form-horizontal(action='/clients', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      label.col-sm-3.control-label(for='id') ID
+      .col-sm-7
+        input.form-control(type='id', name='id', id='id')
+    .form-group
+      label.col-sm-3.control-label(for='name') Name
+      .col-sm-7
+        input.form-control(type='text', name='name', id='name')
+    .form-group
+      label.col-sm-3.control-label(for='secret') Secret
+      .col-sm-7
+        input.form-control(type='text', name='secret', id='secret')
+    .form-group
+      .col-sm-offset-3.col-sm-4
+        button.btn.btn.btn-primary(type='submit')
+          i.fa.fa-pencilr
+          | Add

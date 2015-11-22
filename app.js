@@ -29,6 +29,9 @@ var homeController = require('./controllers/home');
 var userController = require('./controllers/user');
 var apiController = require('./controllers/api');
 var contactController = require('./controllers/contact');
+var clientController = require('./controllers/client');
+var authController = require('./controllers/auth');
+var oauth2Controller = require('./controllers/oauth2');
 
 /**
  * API keys and Passport configuration.
@@ -56,12 +59,13 @@ mongoose.connection.on('error', function() {
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set('view cache', false);
 app.use(compress());
 app.use(sass({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
-  debug: true,
-  outputStyle: 'expanded'
+  debug: false,
+  outputStyle: 'compressed'
 }));
 app.use(logger('dev'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
@@ -80,7 +84,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(lusca({
-  csrf: true,
+  csrf: false,
   xframe: 'SAMEORIGIN',
   xssProtection: true
 }));
@@ -193,6 +197,19 @@ app.get('/auth/venmo/callback', passport.authorize('venmo', { failureRedirect: '
   res.redirect('/api/venmo');
 });
 
+/**
+ * Create endpoint handlers for /clients
+ */
+app.get('/clients', passportConf.isAuthenticated, clientController.getClients);
+app.post('/clients', passportConf.isAuthenticated, clientController.postClients);
+
+// Create endpoint handlers for oauth2 authorize
+
+app.get('/api/oauth2/authorize', authController.isAuthenticated, oauth2Controller.authorization);
+app.post('/api/oauth2/authorize', authController.isAuthenticated, oauth2Controller.decision);
+
+// Create endpoint handlers for oauth2 token
+app.post('/api/oauth2/token', authController.isClientAuthenticated, oauth2Controller.token);
 
 /**
  * Error Handler.
